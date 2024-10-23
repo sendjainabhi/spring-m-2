@@ -4,6 +4,10 @@ metadata:
   creationTimestamp: null
   name: spring-m-2
 spec:
+  acceptedServiceBindings:
+  - name: redis
+    types:
+    - redis
   build:
     buildpacks: {}
     nonSecretEnv:

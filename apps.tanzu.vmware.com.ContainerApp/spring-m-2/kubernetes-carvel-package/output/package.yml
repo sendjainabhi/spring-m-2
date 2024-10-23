@@ -1,0 +1,31 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/spring-m-2
+  creationTimestamp: null
+  name: spring-m-2.apps.local.20240930.1827.50873
+spec:
+  refName: spring-m-2.apps.local
+  releasedAt: "2024-09-30T18:32:12Z"
+  template:
+    spec:
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait=false
+      fetch:
+      - imgpkgBundle:
+          image: ghcr.io/sendjainabhi/spring-m-2@sha256:302add1c684ff4eee410364c2ac32535bfbe28d86c496d7b8b23be183a8e4f0e
+      template:
+      - ytt:
+          paths:
+          - config/
+      - kbld:
+          paths:
+          - .imgpkg/images.yml
+          - '-'
+  valuesSchema:
+    openAPIv3: null
+  version: 20240930.1827.50873

@@ -165,17 +165,32 @@ tanzu space use <your tanzu platform space name>
 #Set java jvm env var to 17 , tpk8 default is jvm is 11 
 tanzu app config build non-secret-env set BP_JVM_VERSION=17
 
+#tanzu app init , refer following config param.
+ tanzu app init
+? What is your app's name? spring-m-2
+? Would you like to replace all existing content of the current spring-m-2.yml? Yes
+? Which directory contains your app's source code? .
+? Select container build type to use for this app: buildpacks
+? Should your app be accessible through HTTP? Yes
+
+✓ Created tanzu.yml
+✓ Recorded app configuration to .tanzu/config/spring-m-2.yml
+
 #set tanzu registry for container app  (used git hub container registry, you can select of your choice )
 tanzu build config --containerapp-registry ghcr.io/<git use name>/spring-m-2
 
 #Docker login for app image push
 docker login --username <git user name> --password <git token> ghcr.io
 
+#create a directory dev and assign permission to write
+mkdir dev 
+chmod 777 dev
+
 #tanzu build and push app image command 
-tanzu build --output-dir /stage
+tanzu build --output-dir dev
 
 #tanzu deploy from local directory command 
-tanzu deploy --from-build /stage
+tanzu deploy --from-build dev
 
 #tanzu deploy for build and deploy app together
 tanzu deploy 
@@ -195,7 +210,7 @@ tanzu services type list
 tanzu service create MySQLInstance/spring-m2-db
 
 #bind the db to the spring-m-2  app
-tanzu service bind MySQLInstance/spring-m2-db ContinerApp/spring-m2-bind 
+tanzu service bind MySQLInstance/spring-m2-db ContainerApp/spring-m-2
 
 
 #show that the app is bound to the database (if deploying, discussing that it's automatically restarting)

@@ -1,0 +1,92 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/spring-m-2
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: spring-m-2
+spec:
+  content:
+    buildTimestamp: "2024-09-30T18:27:50Z"
+    gitCommit: e76cba61dd080dc35fadba24b78b5699dc6ed1de-dirty
+    gitURL: github.com/sendjainabhi/spring-m-2.git
+    packageImage: ghcr.io/sendjainabhi/spring-m-2@sha256:302add1c684ff4eee410364c2ac32535bfbe28d86c496d7b8b23be183a8e4f0e
+    packageRefName: spring-m-2.apps.local
+    packageVersion: 20240930.1827.50873
+    summary: git:e76cba6 @ 2024-09-30T18:27:50Z
+    version: 20240930.1827.50873
+  health:
+    maxUnavailableReplicas: 10%
+  image: ghcr.io/sendjainabhi/spring-m-2@sha256:9702adeadbaf3b1ed94fb3834199678031e89adcd276512d390b0c0fc499b532
+  nonSecretEnv:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dmanagement.endpoint.health.probes.add-additional-paths=true -Dmanagement.health.probes.enabled=true
+      -Dserver.port=8080 -Dserver.shutdown.grace-period=24s
+  ports:
+  - name: main
+    port: 8080
+  probes:
+    liveness:
+      httpGet:
+        path: /livez
+        port: 8080
+        scheme: HTTP
+    readiness:
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+    startup:
+      failureThreshold: 120
+      httpGet:
+        path: /readyz
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 1
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=spring-m-2
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: spring-m-2
+  - for: kubernetes.service-target
+    kind: Service
+    name: spring-m-2
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: spring-m-2-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: spring-m-2-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: spring-m-2-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: spring-m-2
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: spring-m-2.apps.local.20240930.1827.50873
+  - for: kubernetes.delete
+    kind: Secret
+    name: spring-m-2-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: spring-m-2-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
+    kind: Secret
+    name: spring-m-2-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
